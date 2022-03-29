@@ -43,8 +43,10 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   const query = req.params.query;
 
   const products = [];
+
+  //Commented for time being as Amazon not responding due to high traffic
   // await fetchfromAmazon(query).then((product) => {
-  //   if (product !== null && product.length !== 0) {
+  //   if (product !== null && product !== undefined && product.length !== 0) {
   //     createScrapeProducts(product);
   //     for (let i = 0; i < product.length; i++) {
   //       products.push(product[i]);
@@ -53,7 +55,7 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   // });
   // if (products.length === 0) {
   //   await fetchfromAmazonDifferentStructure(query).then((product) => {
-  //     if (product !== null && product.length !== 0) {
+  //     if (product !== null && product !== undefined && product.length !== 0) {
   //       createScrapeProducts(product);
   //       for (let i = 0; i < product.length; i++) {
   //         products.push(product[i]);
@@ -61,8 +63,9 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   //     }
   //   });
   // }
+  //getting the products from the database
   await getProductsWithQuery(query).then((product) => {
-    if (product !== null && product.length !== 0) {
+    if (product !== null && product !== undefined && product.length !== 0) {
       for (let i = 0; i < product.length; i++) {
         products.push(product[i]);
       }
@@ -70,7 +73,7 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   });
 
   await fetchfromFlipkart(query).then((product) => {
-    if (product !== null && product.length !== 0) {
+    if (product !== null && product !== undefined && product.length !== 0) {
       createScrapeProducts(product);
       for (let i = 0; i < product.length; i++) {
         products.push(product[i]);
@@ -79,7 +82,7 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   });
 
   await fetchfromFlipkartDifferentStructure(query).then((product) => {
-    if (product !== null && product.length !== 0) {
+    if (product !== null && product !== undefined && product.length !== 0) {
       createScrapeProducts(product);
       for (let i = 0; i < product.length; i++) {
         products.push(product[i]);
@@ -88,7 +91,7 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   });
 
   await fetchfromSnapdeal(query).then((product) => {
-    if (product !== null && product.length !== 0) {
+    if (product !== null && product !== undefined && product.length !== 0) {
       createScrapeProducts(product);
       for (let i = 0; i < product.length; i++) {
         products.push(product[i]);
