@@ -41,7 +41,6 @@ export const client = await createConnection();
 
 app.get("/scrapedProducts/:query", async (req, res) => {
   const query = req.params.query;
-  console.log(query);
 
   const products = [];
   await fetchfromAmazon(query).then((product) => {
