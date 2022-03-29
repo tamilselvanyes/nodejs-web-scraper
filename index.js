@@ -61,6 +61,14 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   //     }
   //   });
   // }
+  await getProductsWithQuery(query).then((product) => {
+    if (product !== null && product.length !== 0) {
+      for (let i = 0; i < product.length; i++) {
+        products.push(product[i]);
+      }
+    }
+  });
+
   await fetchfromFlipkart(query).then((product) => {
     if (product !== null && product.length !== 0) {
       createScrapeProducts(product);

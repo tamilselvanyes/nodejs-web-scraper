@@ -42,7 +42,7 @@ export function getProductsWithQuery(query) {
   return client
     .db("b30wd")
     .collection("scraper")
-    .find({ title: { $regex: /$query/i } })
+    .find({ title: { $regex: query, $options: "i" } })
     .toArray();
 }
 
