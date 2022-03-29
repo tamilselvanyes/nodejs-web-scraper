@@ -43,24 +43,24 @@ app.get("/scrapedProducts/:query", async (req, res) => {
   const query = req.params.query;
 
   const products = [];
-  await fetchfromAmazon(query).then((product) => {
-    if (product !== null && product.length !== 0) {
-      createScrapeProducts(product);
-      for (let i = 0; i < product.length; i++) {
-        products.push(product[i]);
-      }
-    }
-  });
-  if (products.length === 0) {
-    await fetchfromAmazonDifferentStructure(query).then((product) => {
-      if (product !== null && product.length !== 0) {
-        createScrapeProducts(product);
-        for (let i = 0; i < product.length; i++) {
-          products.push(product[i]);
-        }
-      }
-    });
-  }
+  // await fetchfromAmazon(query).then((product) => {
+  //   if (product !== null && product.length !== 0) {
+  //     createScrapeProducts(product);
+  //     for (let i = 0; i < product.length; i++) {
+  //       products.push(product[i]);
+  //     }
+  //   }
+  // });
+  // if (products.length === 0) {
+  //   await fetchfromAmazonDifferentStructure(query).then((product) => {
+  //     if (product !== null && product.length !== 0) {
+  //       createScrapeProducts(product);
+  //       for (let i = 0; i < product.length; i++) {
+  //         products.push(product[i]);
+  //       }
+  //     }
+  //   });
+  // }
   await fetchfromFlipkart(query).then((product) => {
     if (product !== null && product.length !== 0) {
       createScrapeProducts(product);
