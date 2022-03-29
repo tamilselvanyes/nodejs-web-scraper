@@ -6,7 +6,25 @@ import bodyParser from "body-parser";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { MailTransporter } from "./sendEmail.js";
-import { ObjectId } from "mongodb";
+import {
+  fetchfromAmazon,
+  fetchfromFlipkart,
+  fetchfromAmazonDifferentStructure,
+  fetchfromSnapdeal,
+  fetchfromFlipkartDifferentStructure,
+} from "./scraper.js";
+
+import {
+  createUser,
+  getUserByName,
+  createTokenForUser,
+  checkUserInToken,
+  updatePassword,
+  removeToken,
+  createScrapeProducts,
+  getAllProducts,
+  getProductsWithQuery,
+} from "./helper.js";
 
 const app = express();
 //middleware --> Intercept --> Body to JSON
@@ -19,7 +37,65 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL;
 
-const client = await createConnection();
+export const client = await createConnection();
+
+app.get("/scrapedProducts/:query", async (req, res) => {
+  const query = req.params.query;
+  console.log(query);
+
+  const products = [];
+  await fetchfromAmazon(query).then((product) => {
+    if (product !== null && product.length !== 0) {
+      createScrapeProducts(product);
+      for (let i = 0; i < product.length; i++) {
+        products.push(product[i]);
+      }
+    }
+  });
+  if (products.length === 0) {
+    await fetchfromAmazonDifferentStructure(query).then((product) => {
+      if (product !== null && product.length !== 0) {
+        createScrapeProducts(product);
+        for (let i = 0; i < product.length; i++) {
+          products.push(product[i]);
+        }
+      }
+    });
+  }
+  await fetchfromFlipkart(query).then((product) => {
+    if (product !== null && product.length !== 0) {
+      createScrapeProducts(product);
+      for (let i = 0; i < product.length; i++) {
+        products.push(product[i]);
+      }
+    }
+  });
+
+  await fetchfromFlipkartDifferentStructure(query).then((product) => {
+    if (product !== null && product.length !== 0) {
+      createScrapeProducts(product);
+      for (let i = 0; i < product.length; i++) {
+        products.push(product[i]);
+      }
+    }
+  });
+
+  await fetchfromSnapdeal(query).then((product) => {
+    if (product !== null && product.length !== 0) {
+      createScrapeProducts(product);
+      for (let i = 0; i < product.length; i++) {
+        products.push(product[i]);
+      }
+    }
+  });
+
+  res.send(products);
+});
+
+app.get("/scrapedProducts", async (req, res) => {
+  const products = await getAllProducts();
+  res.send(products);
+});
 
 app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
@@ -60,7 +136,6 @@ app.post("/reset-password-confirmation/:userid/:token", async (req, res) => {
   const token = req.body.token;
 
   const user_token = await checkUserInToken(user_id);
-  console.log(user_token);
 
   if (!user_token) {
     res
@@ -164,34 +239,6 @@ async function genPassword(password) {
   return hashPassword;
 }
 
-function createUser(data) {
-  return client.db("b30wd").collection("users").insertOne(data);
-}
-
-function getUserByName(email) {
-  return client.db("b30wd").collection("users").findOne({ email: email });
-}
-
-function createTokenForUser(data) {
-  return client.db("b30wd").collection("token").insertOne(data);
-}
-function checkUserInToken(user_id) {
-  return client
-    .db("b30wd")
-    .collection("token")
-    .findOne({ user_id: ObjectId(user_id) });
-}
-
-function updatePassword(user_id, updateData) {
-  return client
-    .db("b30wd")
-    .collection("users")
-    .updateOne({ _id: ObjectId(user_id) }, { $set: updateData });
-}
-
-function removeToken(user_id) {
-  return client
-    .db("b30wd")
-    .collection("token")
-    .deleteOne({ user_id: ObjectId(user_id) });
-}
+await fetchfromFlipkart("phone").then((product) =>
+  createScrapeProducts(product)
+);
