@@ -44,25 +44,6 @@ app.get("/scrapedProducts/:query", async (req, res) => {
 
   const products = [];
 
-  //Commented for time being as Amazon not responding due to high traffic
-  // await fetchfromAmazon(query).then((product) => {
-  //   if (product !== null && product !== undefined && product.length !== 0) {
-  //     createScrapeProducts(product);
-  //     for (let i = 0; i < product.length; i++) {
-  //       products.push(product[i]);
-  //     }
-  //   }
-  // });
-  // if (products.length === 0) {
-  //   await fetchfromAmazonDifferentStructure(query).then((product) => {
-  //     if (product !== null && product !== undefined && product.length !== 0) {
-  //       createScrapeProducts(product);
-  //       for (let i = 0; i < product.length; i++) {
-  //         products.push(product[i]);
-  //       }
-  //     }
-  //   });
-  // }
   //getting the products from the database
   await getProductsWithQuery(query).then((product) => {
     if (product !== null && product !== undefined && product.length !== 0) {
@@ -71,6 +52,31 @@ app.get("/scrapedProducts/:query", async (req, res) => {
       }
     }
   });
+
+  if (products.length > 10) {
+    res.send(products);
+    return;
+  }
+
+  //Commented for time being as Amazon not responding due to high traffic
+  await fetchfromAmazon(query).then((product) => {
+    if (product !== null && product !== undefined && product.length !== 0) {
+      createScrapeProducts(product);
+      for (let i = 0; i < product.length; i++) {
+        products.push(product[i]);
+      }
+    }
+  });
+  if (products.length === 0) {
+    await fetchfromAmazonDifferentStructure(query).then((product) => {
+      if (product !== null && product !== undefined && product.length !== 0) {
+        createScrapeProducts(product);
+        for (let i = 0; i < product.length; i++) {
+          products.push(product[i]);
+        }
+      }
+    });
+  }
 
   await fetchfromFlipkart(query).then((product) => {
     if (product !== null && product !== undefined && product.length !== 0) {
