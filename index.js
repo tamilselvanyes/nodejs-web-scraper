@@ -223,7 +223,7 @@ app.get("/", (req, res) => {
   res.send("This is my backend");
 });
 
-app.listen(5000, () => console.log("Server started at 5000"));
+app.listen(PORT, () => console.log(`Server started at ${PORT} "));
 
 async function createConnection() {
   const client = new MongoClient(MONGO_URL);
